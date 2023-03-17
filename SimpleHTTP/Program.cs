@@ -17,39 +17,31 @@ namespace SimpleHTTP
 
         #region DEFINITION OF METHODS
 
+
         /// <summary>
-        /// Say hello to the user
+        /// Say hello to the user and fill the body with the message
         /// </summary>
         static void WelcomeUser()
         {
-            HttpListener listener = null;
             try
             {
+                #region Create and start the listener
                 // Create listener
-                listener = new HttpListener();
+                HttpListener listener = new HttpListener();
 
                 // Set address prefix (User has to enter to call the message)
-                listener.Prefixes.Add("http://localhost:1300/welcome/");
+                listener.Prefixes.Add("http://localhost/welcome/");
 
                 // Start the listener
                 listener.Start();
+                #endregion Create and start the listener
 
                 while (true) // Execute only when listener is active
                 {
-                    Console.Write("- Service started and waiting for connection...\n");
-
                     // Call GetContext on listener starts waiting for the request
                     HttpListenerContext context = listener.GetContext();
 
-                    // Send message when requested
-                    string welcomeMsg = "Welcome to my application!";
-
-                    // (Optional) Calculate the lenght of the replay
-                    context.Response.ContentLength64 = Encoding.UTF8.GetByteCount(welcomeMsg);
-
-                    // (Optional) Get response status
-                    context.Response.StatusCode = (int)HttpStatusCode.OK;
-
+                    #region Write a message to the request body
                     // Refer to the response property output and get stream from it
                     using (Stream stream = context.Response.OutputStream)
                     {
@@ -57,21 +49,73 @@ namespace SimpleHTTP
                         using (StreamWriter writer = new StreamWriter(stream))
                         {
                             // When writer is filled print message to client (Browser)
-                            writer.Write(welcomeMsg);
+                            writer.Write("Welcome to my application \n\n" +
+                                "This is a dream!");
                         }
                     }
-
-                    // Information for server
-                    Console.WriteLine("- Welcome message was sent!\n\n");
+                    #endregion Write a message to the request body
                 }
             }
             catch (WebException ex)
             {
-                Console.WriteLine("Error: " + ex.ToString());
+                Console.WriteLine("Error: " + ex.Message);
             }
         }
 
 
-        #endregion
+        static void GetMessage()
+        {
+            // Create listener
+            HttpListener GetMessage = new HttpListener();
+
+            // Set prefix
+            string prefix = "http://*:/message/";
+
+            // Add prefixx
+            GetMessage.Prefixes.Add(prefix);
+
+            // Start listener
+            GetMessage.Start();
+
+            Console.WriteLine("*Get message service started and listening...");
+
+            while (true)
+            {
+                // Getcontext call will block a thread
+                HttpListenerContext context = GetMessage.GetContext();
+
+                // Log the request on the server side
+                Console.WriteLine("***Get message service requested..");
+
+                // Set the query string from request
+                var qry = context.Request.QueryString;
+
+                /*
+                 * Those keys where send by the POST request
+                 * 1.Key=message
+                 * */
+
+                // Build userdata
+                string message = qry[0];
+
+                try
+                {
+                    Console.WriteLine(message);
+
+                    // When finished close response
+                    context.Response.Close();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+
+                    // Also close when error else application will be blocked
+                    context.Response.Close();
+                }
+            }
+        }
+
+
+        #endregion DEFINITION OF METHODS
     }
 }

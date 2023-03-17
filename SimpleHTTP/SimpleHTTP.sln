@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.3.32929.385
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.33423.256
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleHTTP", "SimpleHTTP.csproj", "{452A6141-64B5-4CE1-B372-C74893F211D2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catch Message Tester", "..\Catch Message Tester\Catch Message Tester.csproj", "{088FE01F-4517-4933-B688-D845BE0558C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{452A6141-64B5-4CE1-B372-C74893F211D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{452A6141-64B5-4CE1-B372-C74893F211D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{452A6141-64B5-4CE1-B372-C74893F211D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{088FE01F-4517-4933-B688-D845BE0558C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{088FE01F-4517-4933-B688-D845BE0558C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{088FE01F-4517-4933-B688-D845BE0558C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{088FE01F-4517-4933-B688-D845BE0558C7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
