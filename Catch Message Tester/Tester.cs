@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Catch_Message_Tester
@@ -21,23 +14,22 @@ namespace Catch_Message_Tester
 
         private void Tester_Load(object sender, EventArgs e)
         {
-
+            GetWelcome();
         }
 
 
         private void btn_Execute_Click(object sender, EventArgs e)
         {
+            SendMessage();
             txt_Answer.Clear();
-
-            GetWelcome(txt_Request.Text);
         }
 
 
-        private void GetWelcome(string domain)
+        private void GetWelcome()
         {
             #region Create the uri for the get request
-            string welcomeDomain = $"http://{domain}";
-            Uri welcomeURI = new Uri(welcomeDomain);
+            string welcome = $"http://localhost/welcome";
+            Uri welcomeURI = new Uri(welcome);
             #endregion Create the uri for the get request
 
             try
@@ -57,6 +49,29 @@ namespace Catch_Message_Tester
             #endregion ON ERROR
         }
 
+
+        private void SendMessage()
+        {
+            #region create uri for httpwebrequest
+            string message = $"http://localhost/message/?usermessage={txt_Answer.Text}";
+            Uri messageURI = new Uri(message);
+            #endregion
+
+            try
+            {
+                PostMessage(messageURI);
+            }
+
+            #region ON ERROR
+            catch (Exception ex)
+            {
+                txt_Answer.Text += ex.Message;
+            }
+            #endregion ON ERROR
+        }
+
+
+        #region METHODS
 
         /// <summary>
         /// A method that will receive a message body from a request
@@ -85,5 +100,21 @@ namespace Catch_Message_Tester
 
             return obtainedMessage;
         }
+
+
+        /// <summary>
+        /// A method that will post a message to given uri
+        /// </summary>
+        /// <param name="uri"></param>
+        private void PostMessage(Uri uri)
+        {
+            // setup post request
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
+
+            // execute the post request
+            request.GetResponse();
+        }
+
+        #endregion METHODS
     }
 }

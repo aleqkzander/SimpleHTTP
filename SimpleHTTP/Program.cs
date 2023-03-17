@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace SimpleHTTP
 {
@@ -12,10 +9,18 @@ namespace SimpleHTTP
     {
         static void Main(string[] args)
         {
-            WelcomeUser();
+            new Thread(() => 
+            {
+                WelcomeUser();
+            }).Start();
+
+            new Thread(() =>
+            {
+                GetMessage();
+            }).Start();
         }
 
-        #region DEFINITION OF METHODS
+        #region METHODS
 
 
         /// <summary>
@@ -34,12 +39,17 @@ namespace SimpleHTTP
 
                 // Start the listener
                 listener.Start();
+
+                // Log
+                Console.WriteLine("Welcome started...");
                 #endregion Create and start the listener
 
                 while (true) // Execute only when listener is active
                 {
                     // Call GetContext on listener starts waiting for the request
                     HttpListenerContext context = listener.GetContext();
+
+                    Console.WriteLine("++ Welcome requested...");
 
                     #region Write a message to the request body
                     // Refer to the response property output and get stream from it
@@ -56,20 +66,27 @@ namespace SimpleHTTP
                     #endregion Write a message to the request body
                 }
             }
+
+            #region ON ERROR
             catch (WebException ex)
             {
                 Console.WriteLine("Error: " + ex.Message);
             }
+            #endregion ON ERROR
         }
 
 
+        /// <summary>
+        /// Receive a message from the user
+        /// </summary>
         static void GetMessage()
         {
+            #region Create and start the listener
             // Create listener
             HttpListener GetMessage = new HttpListener();
 
             // Set prefix
-            string prefix = "http://*:/message/";
+            string prefix = "http://localhost/message/";
 
             // Add prefixx
             GetMessage.Prefixes.Add(prefix);
@@ -77,34 +94,38 @@ namespace SimpleHTTP
             // Start listener
             GetMessage.Start();
 
-            Console.WriteLine("*Get message service started and listening...");
+            Console.WriteLine("Get message started...");
+            #endregion Create and start the listener
 
             while (true)
             {
                 // Getcontext call will block a thread
                 HttpListenerContext context = GetMessage.GetContext();
 
-                // Log the request on the server side
-                Console.WriteLine("***Get message service requested..");
-
-                // Set the query string from request
-                var qry = context.Request.QueryString;
-
-                /*
-                 * Those keys where send by the POST request
-                 * 1.Key=message
-                 * */
-
-                // Build userdata
-                string message = qry[0];
-
                 try
                 {
-                    Console.WriteLine(message);
+                    // Log the request on the server side
+                    Console.WriteLine("++ Get message requested...");
+
+                    // Set the query string from request
+                    var qry = context.Request.QueryString;
+
+                    /*
+                     * Those keys where send by the POST request
+                     * 1.Key=message
+                     * */
+
+                    // Build userdata
+                    string message = qry[0];
+
+                    // write to console
+                    Console.WriteLine("\n" + message);
 
                     // When finished close response
                     context.Response.Close();
                 }
+
+                #region ON ERROR
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
@@ -112,10 +133,11 @@ namespace SimpleHTTP
                     // Also close when error else application will be blocked
                     context.Response.Close();
                 }
+                #endregion ON ERROR
             }
         }
 
 
-        #endregion DEFINITION OF METHODS
+        #endregion METHODS
     }
 }
